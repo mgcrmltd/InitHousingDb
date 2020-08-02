@@ -8,7 +8,7 @@ namespace SetupHousingDB.Builders.Address
 {
     public interface IAddressBuilder
     {
-        public void Init();
+        public void Init(List<HousingContext.Address> addresses);
         public void AddBuildingName();
         public void AddFlatNumber();
         public void AddStreet(HousingContext.Property property);
@@ -18,6 +18,7 @@ namespace SetupHousingDB.Builders.Address
         public void AddPostCode(HousingContext.Property property);
         public void AddComposite(HousingContext.Property property);
         public HousingContext.Address Address { get; }
+        int IdSeed { get; }
     };
     
     public abstract class AddressBuilder : IAddressBuilder
@@ -38,9 +39,13 @@ namespace SetupHousingDB.Builders.Address
             return val % oneIn == 0;
         }
 
-        public void Init()
+        public void Init(List<HousingContext.Address> addresses)
         {
-            BuiltAddress = new HousingContext.Address();
+            BuiltAddress = new HousingContext.Address()
+            {
+                Id = addresses.Count < 1 ? IdSeed : (from p in addresses select p.Id).Max() + 1
+            };
+
         }
 
         public abstract void AddBuildingName();
@@ -55,6 +60,7 @@ namespace SetupHousingDB.Builders.Address
 
         protected HousingContext.Address BuiltAddress;
         public HousingContext.Address Address => BuiltAddress;
+        public int IdSeed => 100000;
     }
 
     public class EstateAddressBuilder : AddressBuilder
@@ -241,7 +247,16 @@ namespace SetupHousingDB.Builders.Address
 
         public override void AddComposite(HousingContext.Property property)
         {
-            throw new NotImplementedException();
+            BuiltAddress.Composite =
+                !string.IsNullOrEmpty(BuiltAddress.Street) ? $"{BuiltAddress.StreetNumber} {BuiltAddress.Street}" : "";
+            BuiltAddress.Composite +=
+                !string.IsNullOrEmpty(BuiltAddress.Area) ? $"\n{BuiltAddress.Area}" : "";
+            BuiltAddress.Composite +=
+                !string.IsNullOrEmpty(BuiltAddress.City) ? $"\n{BuiltAddress.City}" : "";
+            BuiltAddress.Composite +=
+                !string.IsNullOrEmpty(BuiltAddress.County) ? $"\n{BuiltAddress.County}" : "";
+            BuiltAddress.Composite +=
+                !string.IsNullOrEmpty(BuiltAddress.PostCode) ? $"\n{BuiltAddress.PostCode}" : "";
         }
     }
 
@@ -306,15 +321,15 @@ namespace SetupHousingDB.Builders.Address
 
     public interface IAddressDirector
     {
-        HousingContext.Address Build(IAddressBuilder builder, HousingContext.Property property);
+        HousingContext.Address Build(IAddressBuilder builder, HousingContext.Property property, List<HousingContext.Address> addresses);
     }
 
     public class AddressDirector : IAddressDirector
     {
         public HousingContext.Address Build(
-            IAddressBuilder builder, HousingContext.Property property)
+            IAddressBuilder builder, HousingContext.Property property, List<HousingContext.Address> addresses)
         {
-            builder.Init();
+            builder.Init(addresses);
             builder.AddBuildingName();
             builder.AddStreetNumber();
             builder.AddStreet(property);

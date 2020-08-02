@@ -13,4 +13,8 @@
     <ProjectReference Include="..\HousingContext\HousingContext.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Builders\Person\" />
+  </ItemGroup>
+
 </Project>

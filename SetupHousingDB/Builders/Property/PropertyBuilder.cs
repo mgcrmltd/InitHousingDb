@@ -8,19 +8,19 @@ namespace SetupHousingDB.Builders.Property
 {
     public interface IPropertyBuilder
     {
-        public void Init(List<HousingContext.Property> properties);
-        public void SetPropertyType(List<PropertyType> propertyTypes);
-        public void SetPropertySubType(List<PropertySubType> propertySubTypes);
-        public void SetLeaseType(List<LeaseType> leaseTypes);
-        public void SetParent(HousingContext.Property property);
-
-        public void SetPostalAddress(List<HousingContext.Address> addresses,
+        void Init(List<HousingContext.Property> properties);
+        void SetPropertyType(List<PropertyType> propertyTypes);
+        void SetPropertySubType(List<PropertySubType> propertySubTypes);
+        void SetLeaseType(List<LeaseType> leaseTypes);
+        void SetParent(HousingContext.Property property);
+        void SetName();
+        void SetPostalAddress(List<HousingContext.Address> addresses,
             List<AssociatedAddress> associatedAddresses, List<AddressType> addressTypes);
 
-        public IAddressBuilder GetAddressBuilder(List<HousingContext.Address> addresses, List<AssociatedAddress> associatedAddresses);
+        IAddressBuilder GetAddressBuilder(List<HousingContext.Address> addresses, List<AssociatedAddress> associatedAddresses);
 
-        public HousingContext.Property Property { get; }
-        public int IdSeed { get; }
+        HousingContext.Property Property { get; }
+        int IdSeed { get; }
     }
 
     public abstract class PropertyBuilder : IPropertyBuilder
@@ -32,7 +32,7 @@ namespace SetupHousingDB.Builders.Property
         protected IAddressDirector AddressDirector;
         protected HousingContext.Property BuiltProperty;
         public HousingContext.Property Property => BuiltProperty;
-        public int IdSeed { get; }
+        public int IdSeed => 100000;
         protected Random Random;
 
         protected PropertyBuilder()
@@ -66,9 +66,14 @@ namespace SetupHousingDB.Builders.Property
             BuiltProperty.ParentId = property;
         }
 
+        public void SetName()
+        {
+            BuiltProperty.Name = $@"{BuiltProperty.PropertyTypeId.Name}-{BuiltProperty.Id.ToString()}";
+        }
+
         public void SetPostalAddress(List<HousingContext.Address> addresses, List<AssociatedAddress> associatedAddresses, List<AddressType> addressTypes)
         {
-            var address = AddressDirector.Build(GetAddressBuilder(addresses,associatedAddresses), BuiltProperty);
+            var address = AddressDirector.Build(GetAddressBuilder(addresses,associatedAddresses), BuiltProperty, addresses);
             addresses.Add(address);
             associatedAddresses.Add(new AssociatedAddress()
             {
@@ -77,8 +82,6 @@ namespace SetupHousingDB.Builders.Property
                 PropertyAddressTypeId = addressTypes.First(x => x.Name == "Postal"),
                 PropertyId = BuiltProperty
             });
-
-
         }
     }
 
@@ -229,6 +232,7 @@ namespace SetupHousingDB.Builders.Property
             builder.SetPropertyType(propertyTypes);
             builder.SetPropertySubType(propertySubTypes);
             builder.SetLeaseType(leaseTypes);
+            builder.SetName();
             builder.SetPostalAddress(addresses,associatedAddresses,addressTypes);
             
             return builder.Property;

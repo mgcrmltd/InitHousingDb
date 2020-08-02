@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
 namespace HousingContext
 {
-      public class Property
+    public class Property
     {
         [Key]
         [Required]
@@ -32,13 +31,12 @@ namespace HousingContext
 
         [Required]
         public virtual PropertyType PropertyTypeId { get; set; }
-        [Required]
+        
         public virtual PropertySubType PropertySubTypeId { get; set; }
-        [Required]
         public virtual LeaseType LeaseTypeId { get; set; }
 
-        [MaxLength(30)]
-        public List<AssociatedAddress> Addresses { get; set; }
+        //[MaxLength(30)]
+        //public List<AssociatedAddress> Addresses { get; set; }
     }
 
     public class PropertyType
@@ -181,7 +179,25 @@ namespace HousingContext
 
         [Required]
         [MaxLength(30)]
-        public List<AssociatedAddress> Addresses { get; set; }
+        public string Title { get; set; }
+
+        [Required]
+        public DateTime DateOfBirth { get; set; }
+    }
+
+    public class Gender
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
     }
 
     public class AddressType
@@ -206,33 +222,38 @@ namespace HousingContext
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        [MaxLength(10)]
+        [MaxLength(30)]
+        public string BuildingName { get; set; }
+
+        [MaxLength(20)]
         public string FlatNumber { get; set; }
         
         [MaxLength(10)]
-        public string HouseNumber { get; set; }
+        public string StreetNumber { get; set; }
 
         [Required]
         [MaxLength(100)]
         public string Street { get; set; }
 
-        [Required]
-        [MaxLength(100)]
+        [MaxLength(30)]
         public string Area { get; set; }
 
-        [MaxLength(100)]
-        public string District { get; set; }
-        
+        //[MaxLength(100)]
+        //public string District { get; set; }
+
         [Required]
-        [MaxLength(20)]
+        [MaxLength(30)]
         public string City { get; set; }
 
         [Required]
-        [MaxLength(20)]
+        [MaxLength(30)]
         public string County { get; set; }
 
         [MaxLength(10)]
         public string PostCode { get; set; }
+
+        [MaxLength(300)]
+        public string Composite { get; set; }
     }
 
     public class AssociatedAddress

@@ -18,8 +18,10 @@ namespace HousingContext
         public string Name { get; set; }
         
         [Required]
+        [Column(TypeName = "datetime")]
         public DateTime StartDate { get; set; }
         
+        [Column(TypeName = "datetime")]
         public DateTime? EndDate { get; set; }
 
         [Required]
@@ -28,13 +30,13 @@ namespace HousingContext
         [MaxLength(300)]
         public string Notes { get; set; }
 
-        public virtual Property ParentId { get; set; }
+        public virtual Property Parent { get; set; }
 
         [Required]
-        public virtual PropertyType PropertyTypeId { get; set; }
+        public virtual PropertyType PropertyType { get; set; }
         
-        public virtual PropertySubType PropertySubTypeId { get; set; }
-        public virtual LeaseType LeaseTypeId { get; set; }
+        public virtual PropertySubType PropertySubType { get; set; }
+        public virtual LeaseType LeaseType { get; set; }
 
         //[MaxLength(30)]
         //public List<AssociatedAddress> Addresses { get; set; }
@@ -129,15 +131,17 @@ namespace HousingContext
         public string Name { get; set; }
         
         [Required]
+        [Column(TypeName = "datetime")]
         public DateTime StartDate { get; set; }
         
+        [Column(TypeName = "datetime")]
         public DateTime? EndDate { get; set; }
 
-        public virtual Property PropertyId { get; set; }
+        public virtual Property Property { get; set; }
 
-        public virtual TenancyType TenancyTypeId { get; set; }
+        public virtual TenancyType TenancyType { get; set; }
 
-        public virtual TenureType TenureTypeId { get; set; }
+        public virtual TenureType TenureType { get; set; }
     }
 
     public class Tenant
@@ -148,10 +152,10 @@ namespace HousingContext
         public int Id { get; set; }
         
         [Required]
-        public virtual Person PersonId { get; set; }
+        public virtual Person Person { get; set; }
 
         [Required]
-        public virtual Tenancy TenancyId { get; set; }
+        public virtual Tenancy Tenancy { get; set; }
 
         [Required]
         public bool IsPrimary { get; set; }
@@ -199,6 +203,7 @@ namespace HousingContext
         public string Title { get; set; }
 
         [Required]
+        [Column(TypeName = "datetime")]
         public DateTime DateOfBirth { get; set; }
 
         [Required]
@@ -283,15 +288,28 @@ namespace HousingContext
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        public virtual Property PropertyId { get; set; }
+        public virtual Property Property { get; set; }
         
-        public virtual Person PersonId { get; set; }
+        public virtual Person Person { get; set; }
 
         [Required]
-        public virtual AddressType PropertyAddressTypeId { get; set; }
+        public virtual AddressType PropertyAddressType { get; set; }
 
         [Required]
-        public virtual Address AddressId { get; set; }
+        public virtual Address Address { get; set; }
+
+        public AssociatedAddress GetAssociatedAddress(int idSeed, List<AssociatedAddress> associatedAddresses, AddressType type, Address address, Person person,
+            Property property)
+        {
+            return new AssociatedAddress()
+            {
+                Id = Id = associatedAddresses.Count < 1 ? idSeed : (from p in associatedAddresses select p.Id).Max() + 1,
+                PropertyAddressType = type,
+                Person = person,
+                Property = Property
+            };
+
+        }
       
     }
 

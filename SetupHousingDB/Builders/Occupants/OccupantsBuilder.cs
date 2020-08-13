@@ -57,8 +57,8 @@ namespace SetupHousingDB.Builders.Occupants
             tenants.Add(new Tenant()
             {
                 Id = GetNexTenantId(tenants),
-                PersonId = mainPerson,
-                TenancyId = tenancy,
+                Person = mainPerson,
+                Tenancy = tenancy,
                 IsPrimary = true,
                 IsJoint = false
             });
@@ -77,16 +77,16 @@ namespace SetupHousingDB.Builders.Occupants
             tenants.Add(new Tenant()
             {
                 Id = GetNexTenantId(tenants),
-                PersonId = mainPerson,
-                TenancyId = tenancy,
+                Person = mainPerson,
+                Tenancy = tenancy,
                 IsPrimary = true,
                 IsJoint = true
             });
             tenants.Add(new Tenant()
             {
                 Id = GetNexTenantId(tenants),
-                PersonId = jointPerson,
-                TenancyId = tenancy,
+                Person = jointPerson,
+                Tenancy = tenancy,
                 IsPrimary = false,
                 IsJoint = true
             });
@@ -105,16 +105,16 @@ namespace SetupHousingDB.Builders.Occupants
             tenants.Add(new Tenant()
             {
                 Id = GetNexTenantId(tenants),
-                PersonId = mainPerson,
-                TenancyId = tenancy,
+                Person = mainPerson,
+                Tenancy = tenancy,
                 IsPrimary = true,
                 IsJoint = false
             });
             tenants.Add(new Tenant()
             {
                 Id = GetNexTenantId(tenants),
-                PersonId = jointPerson,
-                TenancyId = tenancy,
+                Person = jointPerson,
+                Tenancy = tenancy,
                 IsPrimary = false,
                 IsJoint = false
             });
@@ -134,8 +134,8 @@ namespace SetupHousingDB.Builders.Occupants
                 tenants.Add(new Tenant()
                 {
                     Id = GetNexTenantId(tenants),
-                    PersonId = mainPerson,
-                    TenancyId = tenancy,
+                    Person = mainPerson,
+                    Tenancy = tenancy,
                     IsPrimary = true,
                     IsJoint = false
                 });
@@ -148,8 +148,8 @@ namespace SetupHousingDB.Builders.Occupants
                 tenants.Add(new Tenant()
                 {
                     Id = GetNexTenantId(tenants),
-                    PersonId = mainPerson,
-                    TenancyId = tenancy,
+                    Person = mainPerson,
+                    Tenancy = tenancy,
                     IsPrimary = false,
                     IsJoint = false
                 });

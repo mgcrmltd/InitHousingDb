@@ -15,6 +15,7 @@ namespace SetupHousingDB.Builders.Address
         public void AddStreetNumber();
         public void AddArea(HousingContext.Property property);
         public void AddCity(HousingContext.Property property);
+        public void AddCounty(HousingContext.Property property);
         public void AddPostCode(HousingContext.Property property);
         public void AddComposite(HousingContext.Property property);
         public HousingContext.Address Address { get; }
@@ -55,6 +56,7 @@ namespace SetupHousingDB.Builders.Address
         public abstract void AddStreetNumber();
         public abstract void AddArea(HousingContext.Property property);
         public abstract void AddCity(HousingContext.Property property);
+        public abstract void AddCounty(HousingContext.Property property);
         public abstract void AddPostCode(HousingContext.Property property);
         public abstract void AddComposite(HousingContext.Property property);
 
@@ -85,7 +87,7 @@ namespace SetupHousingDB.Builders.Address
 
         public override void AddStreetNumber()
         {
-
+            
         }
 
         public override void AddArea(HousingContext.Property property)
@@ -96,6 +98,11 @@ namespace SetupHousingDB.Builders.Address
         public override void AddCity(HousingContext.Property property)
         {
             BuiltAddress.City = Faker.Address.City();
+        }
+
+        public override void AddCounty(HousingContext.Property property)
+        {
+            BuiltAddress.County = Faker.Address.UkCounty();
         }
 
         public override void AddPostCode(HousingContext.Property property)
@@ -138,7 +145,7 @@ namespace SetupHousingDB.Builders.Address
 
         public override void AddStreet(HousingContext.Property property)
         {
-            var estateAddress = AssociatedAddressList.First(x => x.PropertyId == property.ParentId).AddressId;
+            var estateAddress = AssociatedAddressList.First(x => x.Property == property.Parent).Address;
             BuiltAddress.Street = estateAddress.Street;
         }
 
@@ -148,26 +155,32 @@ namespace SetupHousingDB.Builders.Address
 
         public override void AddArea(HousingContext.Property property)
         {
-            var estateAddress = AssociatedAddressList.First(x => x.PropertyId == property.ParentId).AddressId;
+            var estateAddress = AssociatedAddressList.First(x => x.Property == property.Parent).Address;
             BuiltAddress.Area = estateAddress.Area;
         }
 
         public override void AddCity(HousingContext.Property property)
         {
-            var estateAddress = AssociatedAddressList.First(x => x.PropertyId == property.ParentId).AddressId;
+            var estateAddress = AssociatedAddressList.First(x => x.Property == property.Parent).Address;
             BuiltAddress.City = estateAddress.City;
+        }
+
+        public override void AddCounty(HousingContext.Property property)
+        {
+            var estateAddress = AssociatedAddressList.First(x => x.Property == property.Parent).Address;
+            BuiltAddress.County = estateAddress.County;
         }
 
         public override void AddPostCode(HousingContext.Property property)
         {
-            var estateAddress = AssociatedAddressList.First(x => x.PropertyId == property.ParentId).AddressId;
+            var estateAddress = AssociatedAddressList.First(x => x.Property == property.Parent).Address;
             BuiltAddress.PostCode = estateAddress.PostCode;
         }
 
         public override void AddComposite(HousingContext.Property property)
         {
-            var estateAddress = AssociatedAddressList.First(x => x.PropertyId == property.ParentId).AddressId;
-            BuiltAddress.Composite = $"{BuiltAddress.BuildingName}";
+            var estateAddress = AssociatedAddressList.First(x => x.Property == property.Parent).Address;
+            BuiltAddress.Composite = $"{BuiltAddress.BuildingName}, {estateAddress.BuildingName}";
             BuiltAddress.Composite +=
                 !string.IsNullOrEmpty(estateAddress.Street) ? $"\n{estateAddress.StreetNumber} {estateAddress.Street}" : "";
             BuiltAddress.Composite +=
@@ -239,6 +252,11 @@ namespace SetupHousingDB.Builders.Address
             BuiltAddress.City = Faker.Address.City();
         }
 
+        public override void AddCounty(HousingContext.Property property)
+        {
+            BuiltAddress.County = Faker.Address.UkCounty();
+        }
+
         public override void AddPostCode(HousingContext.Property property)
         {
             BuiltAddress.PostCode = Faker.Address.UkPostCode();
@@ -298,6 +316,11 @@ namespace SetupHousingDB.Builders.Address
             BuiltAddress.City = Faker.Address.City();
         }
 
+        public override void AddCounty(HousingContext.Property property)
+        {
+            BuiltAddress.County = Faker.Address.UkCounty();
+        }
+
         public override void AddPostCode(HousingContext.Property property)
         {
             BuiltAddress.PostCode = Faker.Address.UkPostCode();
@@ -338,6 +361,7 @@ namespace SetupHousingDB.Builders.Address
             builder.AddCity(property);
             builder.AddPostCode(property);
             builder.AddCity(property);
+            builder.AddCounty(property);
             builder.AddComposite(property);
 
             return builder.Address;

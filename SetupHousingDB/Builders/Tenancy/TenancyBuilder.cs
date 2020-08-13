@@ -56,17 +56,17 @@ namespace SetupHousingDB.Builders.Tenancy
 
         public override void SetProperty(HousingContext.Property property)
         {
-            BuiltTenancy.PropertyId = property;
+            BuiltTenancy.Property = property;
         }
 
         public override void SetTenancyType(List<TenancyType> tenancyTypes)
         {
-            BuiltTenancy.TenancyTypeId = tenancyTypes.GetRandom();
+            BuiltTenancy.TenancyType = tenancyTypes.GetRandom();
         }
 
         public override void SetTenureType(List<TenureType> tenureTypes)
         {
-            BuiltTenancy.TenureTypeId = tenureTypes.GetRandom();
+            BuiltTenancy.TenureType = tenureTypes.GetRandom();
         }
     }
 

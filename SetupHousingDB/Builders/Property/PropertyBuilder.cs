@@ -47,7 +47,8 @@ namespace SetupHousingDB.Builders.Property
         {
             BuiltProperty = new HousingContext.Property()
             {
-                Id = properties.Count < 1 ? IdSeed : (from p in properties select p.Id).Max() + 1
+                Id = properties.Count < 1 ? IdSeed : (from p in properties select p.Id).Max() + 1,
+                StartDate = DateTime.Now.AddYears(Faker.RandomNumber.Next(-200,-15))
             };
         }
 
@@ -63,12 +64,12 @@ namespace SetupHousingDB.Builders.Property
         public abstract void SetLeaseType(List<LeaseType> leaseTypes);
         public void SetParent(HousingContext.Property property)
         {
-            BuiltProperty.ParentId = property;
+            BuiltProperty.Parent = property;
         }
 
         public void SetName()
         {
-            BuiltProperty.Name = $@"{BuiltProperty.PropertyTypeId.Name}-{BuiltProperty.Id.ToString()}";
+            BuiltProperty.Name = $@"{BuiltProperty.PropertyType.Name}-{BuiltProperty.Id.ToString()}";
         }
 
         public void SetPostalAddress(List<HousingContext.Address> addresses, List<AssociatedAddress> associatedAddresses, List<AddressType> addressTypes)
@@ -78,9 +79,9 @@ namespace SetupHousingDB.Builders.Property
             associatedAddresses.Add(new AssociatedAddress()
             {
                 Id = associatedAddresses.Count < 1 ? IdSeed : (from p in associatedAddresses select p.Id).Max() + 1,
-                AddressId = address,
-                PropertyAddressTypeId = addressTypes.First(x => x.Name == "Postal"),
-                PropertyId = BuiltProperty
+                Address = address,
+                PropertyAddressType = addressTypes.First(x => x.Name == "Postal"),
+                Property = BuiltProperty
             });
         }
     }
@@ -89,7 +90,7 @@ namespace SetupHousingDB.Builders.Property
     {
         public override void SetPropertyType(List<PropertyType> propertyTypes)
         {
-            BuiltProperty.PropertyTypeId = propertyTypes.First(x => x.Name == "EST");
+            BuiltProperty.PropertyType = propertyTypes.First(x => x.Name == "EST");
         }
 
         public override void SetPropertySubType(List<PropertySubType> propertySubTypes)
@@ -112,7 +113,7 @@ namespace SetupHousingDB.Builders.Property
     {
         public override void SetPropertyType(List<PropertyType> propertyTypes)
         {
-            BuiltProperty.PropertyTypeId = propertyTypes.First(x => x.Name == "BLK");
+            BuiltProperty.PropertyType = propertyTypes.First(x => x.Name == "BLK");
         }
 
         public override void SetPropertySubType(List<PropertySubType> propertySubTypes)
@@ -134,14 +135,14 @@ namespace SetupHousingDB.Builders.Property
     {
         public override void SetPropertyType(List<PropertyType> propertyTypes)
         {
-            BuiltProperty.PropertyTypeId = propertyTypes.First(x => x.Name == "FLT");
+            BuiltProperty.PropertyType = propertyTypes.First(x => x.Name == "FLT");
         }
 
         public override void SetPropertySubType(List<PropertySubType> propertySubTypes)
         {
             var types = new[] {"BASE", "GROUD", "INT", "TOP"};
             var st = (from p in propertySubTypes where types.Contains(p.Name) select p).ToList();
-            BuiltProperty.PropertySubTypeId = st[Random.Next(0,st.Count -1)];
+            BuiltProperty.PropertySubType = st[Random.Next(0,st.Count -1)];
         }
 
         public override void SetLeaseType(List<LeaseType> leaseTypes)
@@ -150,11 +151,11 @@ namespace SetupHousingDB.Builders.Property
             if (useOther)
             {
                 var leaseList = leaseTypes.Where(x => x.Name != "SOWHSE" && x.Name != "SOWFLT").ToList();
-                BuiltProperty.LeaseTypeId = leaseList[Random.Next(0,leaseList.Count -1)];
+                BuiltProperty.LeaseType = leaseList[Random.Next(0,leaseList.Count -1)];
             }
             else
             {
-                BuiltProperty.LeaseTypeId = leaseTypes.First(x => x.Name == "SOWFLT");
+                BuiltProperty.LeaseType = leaseTypes.First(x => x.Name == "SOWFLT");
             }
         }
 
@@ -169,14 +170,14 @@ namespace SetupHousingDB.Builders.Property
     {
         public override void SetPropertyType(List<PropertyType> propertyTypes)
         {
-            BuiltProperty.PropertyTypeId = propertyTypes.First(x => x.Name == "HSE");
+            BuiltProperty.PropertyType = propertyTypes.First(x => x.Name == "HSE");
         }
 
         public override void SetPropertySubType(List<PropertySubType> propertySubTypes)
         {
             var types = new[] {"DET", "SEMI", "TERR", "TREND", "TRMID"};
             var st = (from p in propertySubTypes where types.Contains(p.Name) select p).ToList();
-            BuiltProperty.PropertySubTypeId = st[Random.Next(0,st.Count -1)];
+            BuiltProperty.PropertySubType = st[Random.Next(0,st.Count -1)];
         }
 
         public override void SetLeaseType(List<LeaseType> leaseTypes)
@@ -185,11 +186,11 @@ namespace SetupHousingDB.Builders.Property
             if (useOther)
             {
                 var leaseList = leaseTypes.Where(x => x.Name != "SOWHSE" && x.Name != "SOWFLT").ToList();
-                BuiltProperty.LeaseTypeId = leaseList[Random.Next(0,leaseList.Count -1)];
+                BuiltProperty.LeaseType = leaseList[Random.Next(0,leaseList.Count -1)];
             }
             else
             {
-                BuiltProperty.LeaseTypeId = leaseTypes.First(x => x.Name == "SOWHSE");
+                BuiltProperty.LeaseType = leaseTypes.First(x => x.Name == "SOWHSE");
             }
         }
 

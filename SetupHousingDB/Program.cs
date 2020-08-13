@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 
 using HousingContext;
+using SetupHousingDB.Builders.Address;
 using SetupHousingDB.Builders.Occupants;
 using SetupHousingDB.Builders.Property;
 using SetupHousingDB.Builders.Tenancy;
@@ -51,6 +52,24 @@ namespace SetupHousingDB
                 CreateProperties();
                 CreateTenancies();
                 CreateTenants();
+                //AddCorrespondanceAddresses();
+            }
+
+            private void AddCorrespondanceAddresses()
+            {
+                var addressDirector = new AddressDirector();
+                var postal = new NonPropertyAddressBuilder(AddressList,AssociatedAddressList);
+                var propertyAddresses = AssociatedAddressList.Where(x => x.Property != null).ToList();
+
+                var someContacts = AssociatedAddressList.Count / 3;
+                for (var i = 0; i < someContacts; i++)
+                {
+                    var associatedAddress = propertyAddresses[Faker.RandomNumber.Next(0, PersonList.Count - 1)];
+                    var tenancy = TenancyList.First(x => x.Property.Id == associatedAddress.Property.Id);
+                    var tenant = TenantList.First(x => x.Tenancy.Id == tenancy.Id && x.IsPrimary);
+                    //var person
+
+                }
             }
 
             public void PopulateContext(HousingDbContext context)
@@ -106,7 +125,7 @@ namespace SetupHousingDB
                 var tBuilder = new TenancyBuilderStandard();
 
                 var ids = (from p in PropertyList
-                    where p.PropertyTypeId.Name != "BLK" && p.PropertyTypeId.Name != "EST"
+                    where p.PropertyType.Name != "BLK" && p.PropertyType.Name != "EST"
                     select p.Id);
 
                 foreach (var id in ids)
@@ -137,7 +156,7 @@ namespace SetupHousingDB
                     AddressList, AssociatedAddressList, AddressTypeList, null));
 
                 //USe ToList to get a copy. Cannot iterate through list we will modify
-                var estates = PropertyList.Where(x => x.PropertyTypeId.Name == "EST").ToList();
+                var estates = PropertyList.Where(x => x.PropertyType.Name == "EST").ToList();
 
                 foreach(var est in estates)
                 {
@@ -148,7 +167,7 @@ namespace SetupHousingDB
                     }
                 }
 
-                var blocks = PropertyList.Where(x => x.PropertyTypeId.Name == "BLK").ToList();
+                var blocks = PropertyList.Where(x => x.PropertyType.Name == "BLK").ToList();
 
                 foreach(var blk in blocks)
                 {

@@ -71,7 +71,7 @@ namespace SetupHousingDB.Builders.Address
 
         public override void AddBuildingName()
         {
-            BuiltAddress.BuildingName = Faker.Name.Last() + " Estate";
+            BuiltAddress.BuildingName = Faker.Name.Last() + " ESTATE";
         }
 
         public override void AddFlatNumber()
@@ -270,7 +270,7 @@ namespace SetupHousingDB.Builders.Address
         {
             if (!RandomHelper.GenerateAOneInXChance(200)) return;
             
-            BuiltAddress.BuildingName = Faker.Name.Last() + " Estate";
+            BuiltAddress.BuildingName = Faker.Name.Last() + " ESTATE";
         }
 
         public override void AddFlatNumber()

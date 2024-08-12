@@ -6,7 +6,55 @@ using System.Linq;
 
 namespace HousingContext
 {
-    public class Property
+
+    public class Address
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string pea_Address1 { get; set; }
+        
+        [Required]
+        [MaxLength(30)]
+        public string pea_Address2 { get; set; }
+        
+        [MaxLength(30)]
+        public string pea_Address3 { get; set; }
+        
+        [MaxLength(30)]
+        public string pea_Address4 { get; set; }
+        
+        [MaxLength(30)]
+        public string pea_Address5 { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string pea_FormattedAddress { get; set; }
+        
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+        
+        [Required]
+        [MaxLength(30)]
+        public string pea_PostCode { get; set; }
+
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        [Required]
+        public virtual AddressType AddressTypeId { get; set; }
+    }
+    
+    public class Premises
     {
         [Key]
         [Required]
@@ -21,102 +69,123 @@ namespace HousingContext
         public DateTime StartDate { get; set; }
         
         public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
 
         [Required]
         public bool Residential { get; set; }
+        
+        [Required]
+        public bool Owned { get; set; }
 
-        [MaxLength(300)]
-        public string Notes { get; set; }
-
-        public virtual Property ParentId { get; set; }
+        public virtual Premises ParentId { get; set; }
+        
+        [Required]
+        public virtual PremisesType PremisesTypeId { get; set; }
 
         [Required]
         public virtual PropertyType PropertyTypeId { get; set; }
         
         public virtual PropertySubType PropertySubTypeId { get; set; }
+        public virtual PropertySource PropertySourceId { get; set; }
+        public virtual PropertyStatus PropertyStatusId { get; set; }
         public virtual LeaseType LeaseTypeId { get; set; }
-
-        //[MaxLength(30)]
-        //public List<AssociatedAddress> Addresses { get; set; }
     }
 
-    public class PropertyType
+    public class PremisesAddress
     {
-        [Key] 
+        [Key]
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Name { get; set; }
+        
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
 
         [Required]
         [MaxLength(30)]
-        public string Name { get; set; }
-
+        public string SourceKey { get; set; }
+        
+        [MaxLength(100)]
+        public string LocalAuthority { get; set; }
+        
         [Required]
-        [MaxLength(300)]
-        public string Description { get; set; }
-    }
-
-    public class PropertySubType
-    {
-        [Key] 
+        public Address AddressId { get; set; }
+        
         [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int Id { get; set; }
-
+        public Premises PremisesId { get; set; }
+        
         [Required]
-        [MaxLength(30)]
-        public string Name { get; set; }
-
-        [Required]
-        [MaxLength(300)]
-        public string Description { get; set; }
+        public bool IsCurrent { get; set; }
+        
     }
     
-    public class LeaseType
+    public class RevenueAccount
     {
+        [Key]
+        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Key] 
         public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Name { get; set; }
+        
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
 
         [Required]
         [MaxLength(30)]
-        public string Name { get; set; }
+        public string SourceKey { get; set; }
+        
+        [Required]
+        public Frequency FrequencyId { get; set; }
+        
+        [Required]
+        public RevenueAccountType RevenueAccountTypeId { get; set; }
+  
+        
+        [Required]
+        public TenancyPremises TenancyPremisesId { get; set; }
 
         [Required]
-        [MaxLength(300)]
-        public string Description { get; set; }
+        public decimal GrossRent { get; set; }
+        
+        [Required]
+        public decimal LastAccountBalance { get; set; }
+        
+        public DateTime? LastBalanceDate { get; set; }
+        
+        public string HBCLaimNumber { get; set; }
+        
+        public decimal StatementBalance { get; set; }
+        
+        public DateTime? StatementToDate { get; set; }
+        
+        [Required]
+        public bool IsCurrent { get; set; }
+        
     }
-
-    public class TenancyType
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Key] 
-        public int Id { get; set; }
-
-        [Required]
-        [MaxLength(30)]
-        public string Name { get; set; }
-
-        [Required]
-        [MaxLength(300)]
-        public string Description { get; set; }
-    }
-
-    public class TenureType
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Key] 
-        public int Id { get; set; }
-
-        [Required]
-        [MaxLength(30)]
-        public string Name { get; set; }
-
-        [Required]
-        [MaxLength(300)]
-        public string Description { get; set; }
-    }
-
+    
     public class Tenancy
     {
         [Key]
@@ -132,12 +201,208 @@ namespace HousingContext
         public DateTime StartDate { get; set; }
         
         public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
 
-        public virtual Property PropertyId { get; set; }
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
 
         public virtual TenancyType TenancyTypeId { get; set; }
 
         public virtual TenureType TenureTypeId { get; set; }
+        
+        public virtual TenancySource TenancySourceId { get; set; }
+    }
+
+    public class TenancyPremises
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Name { get; set; }
+        
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        [Required]
+        public Tenancy TenancyId { get; set; }
+        
+        [Required]
+        public Premises PremisesId { get; set; }
+    }
+
+    public class TenancyOccupant
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Name { get; set; }
+        
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        [Required]
+        public Tenancy TenancyId { get; set; }
+
+        [Required] 
+        public Person PersonId { get; set; }
+        
+        [Required]
+        public bool MainTenant { get; set; }
+    }
+    
+    public class PremisesGroup
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Name { get; set; }
+       
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        public PremisesGroup ParentId { get; set; }
+        
+        [Required]
+        public PremisesGroupType PremisesGroupTypeId { get; set; }
+    }
+
+    public class PremisesPremisesGroup 
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Name { get; set; }
+
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [Required]
+        public PremisesGroup PremisesGroupId { get; set; }
+        
+        [Required]
+        public Premises PremisesId { get; set; }
+    }
+    
+    public class PremisesGroupUserRole 
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Name { get; set; }
+        
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        [Required]
+        public PremisesGroup PremisesGroupId { get; set; }
+        
+        [Required]
+        public Role RoleId { get; set; }
+        
+        [Required]
+        public Person PersonId { get; set; }
+        
+        [Required]
+        public User User { get; set; }
+
+    }
+    
+    public class PremisesContactMethod
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Name { get; set; }
+        
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        [Required]
+        public Premises PremisesId { get; set; }
+        
+        [Required]
+        public ContactMethod ContactMethodId { get; set; }
     }
 
     public class Tenant
@@ -160,23 +425,7 @@ namespace HousingContext
         public bool IsJoint { get; set; }
     }
 
-    public interface IPerson
-    {
-        int Id { get; set; }
-        
-        string FirstName { get; set; }
-
-        string MiddleName { get; set; }
-
-        string Surname { get; set; }
-
-        string Title { get; set; }
-
-        DateTime DateOfBirth { get; set; }
-
-        Gender Gender { get; set; }
-    }
-    public class Person : IPerson
+    public class Role 
     {
         [Key]
         [Required]
@@ -184,40 +433,129 @@ namespace HousingContext
         public int Id { get; set; }
         
         [Required]
-        [MaxLength(30)]
-        public string FirstName { get; set; }
-
-        [MaxLength(30)]
-        public string MiddleName { get; set; }
-
-        [Required]
-        [MaxLength(30)]
-        public string Surname { get; set; }
-
-        [Required]
-        [MaxLength(30)]
-        public string Title { get; set; }
-
-        [Required]
-        public DateTime DateOfBirth { get; set; }
-
-        [Required]
-        public Gender Gender { get; set; }
-    }
-
-    public class Gender
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Key] 
-        public int Id { get; set; }
-
-        [Required]
-        [MaxLength(30)]
+        [MaxLength(300)]
         public string Name { get; set; }
-
+        
         [Required]
         [MaxLength(300)]
         public string Description { get; set; }
+        
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class User 
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Name { get; set; }
+
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        [Required]
+        public string CrmUserId { get; set; }
+    }
+    
+    public class PremisesElement
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Name { get; set; }
+        
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        public string Value { get; set; }
+        public string FurtherValue { get; set; }
+        public string AttributeCode { get; set; }
+        public string FurtherAttributeCode { get; set; }
+        
+        [Required]
+        public Element ElementId { get; set; }
+        
+        [Required]
+        public Premises PremisesId { get; set; }
+    }
+
+    public class Element
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Name { get; set; }
+        
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+
+        
+        [Required]
+        public DateTime StartDate { get; set; }
+        
+        public DateTime? EndDate { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        public string Category { get; set; }
+    }
+    
+    public class Person 
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+        
+        [Required]
+        [MaxLength(64)]
+        public string CrmId { get; set; } 
     }
 
     public class AddressType
@@ -233,185 +571,320 @@ namespace HousingContext
         [Required]
         [MaxLength(300)]
         public string Description { get; set; }
-    }
-
-    public class Address
-    {
-        [Key]
-        [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int Id { get; set; }
-
-        [MaxLength(30)]
-        public string BuildingName { get; set; }
-
-        [MaxLength(20)]
-        public string FlatNumber { get; set; }
         
-        [MaxLength(10)]
-        public string StreetNumber { get; set; }
-
-        [Required]
-        [MaxLength(100)]
-        public string Street { get; set; }
-
         [MaxLength(30)]
-        public string Area { get; set; }
-
-        //[MaxLength(100)]
-        //public string District { get; set; }
+        public string SourceApplication { get; set; }
 
         [Required]
         [MaxLength(30)]
-        public string City { get; set; }
-
-        [MaxLength(30)]
-        public string County { get; set; }
-
-        [Required]
-        [MaxLength(10)]
-        public string PostCode { get; set; }
-
-        [MaxLength(300)]
-        public string Composite { get; set; }
+        public string SourceKey { get; set; }
     }
-
-    public class AssociatedAddress
-    {
-        [Key]
-        [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int Id { get; set; }
-
-        public virtual Property PropertyId { get; set; }
-        
-        public virtual Person PersonId { get; set; }
-
-        [Required]
-        public virtual AddressType PropertyAddressTypeId { get; set; }
-
-        [Required]
-        public virtual Address AddressId { get; set; }
-      
-    }
-
-    public class SocialPerson : IPerson
-    {
-        #region Decorator
-        private IPerson _person;
     
-        public SocialPerson(IPerson person)
-        {
-            _person = person;
-        }
+    public class LeaseType
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
 
-        public int Id
-        {
-            get => _person.Id;
-            set => _person.Id = value;
-        }
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
 
-        public string FirstName
-        {
-            get => _person.FirstName;
-            set => _person.FirstName = value;
-        }
-        public string MiddleName {
-            get => _person.MiddleName;
-            set => _person.MiddleName = value;
-        }
-        public string Surname
-        {
-            get => _person.Surname;
-            set => _person.Surname = value;
-        }
-        public string Title
-        {
-            get => _person.Title;
-            set => _person.Title = value;
-        }
-        public DateTime DateOfBirth
-        {
-            get => _person.DateOfBirth;
-            set => _person.DateOfBirth = value;
-        }
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
 
-        public Gender Gender
-        {
-            get => _person.Gender;
-            set => _person.Gender = value;
-        }
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class TenancyType
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
 
-        #endregion
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
 
-        public static Person GetNewAdult(List<Gender> genders, int id)
-        {
-            var p = new Person
-            {
-                FirstName = Faker.Name.First(),
-                Surname = Faker.Name.Last(),
-                DateOfBirth = DateTime.Now.AddDays(Faker.RandomNumber.Next(-29200,-6570)),
-                Gender = genders.GetRandom(),
-                Title = Faker.Name.Prefix(),
-                Id = id
-            };
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
 
-            if (Faker.RandomNumber.Next(1, 100) > 80)
-            {
-                p.MiddleName = Faker.Name.First();
-            }
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class TenancySource
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
 
-            return p;
-        }
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
 
-        public Person CreatePartner(int id, List<Gender> genders)
-        {
-            var p = new Person
-            {
-                Id = id,
-                Gender = genders.First(x => x.Id != _person.Gender.Id), 
-                Surname = _person.Surname
-            };
-            var yesNo = new[] {-1, 1};
-            var multiplier = yesNo[Faker.RandomNumber.Next(0, 1)];
-            p.DateOfBirth = _person.DateOfBirth.AddDays(Faker.RandomNumber.Next(10, 3000) * multiplier);
-            p.FirstName = Faker.Name.First();
-            if (Faker.RandomNumber.Next(1, 100) > 80)
-            {
-                p.MiddleName = Faker.Name.First();
-            }
-            if (Faker.RandomNumber.Next(1, 100) < 80)
-            {
-                p.Surname = _person.Surname;
-            }
-            else
-            {
-                p.Surname = Faker.Name.Last();
-            }
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
 
-            p.Title = Faker.Name.Prefix();
-            return p;
-        }
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
 
-        public Person CreateChild(int id, List<Gender> genders)
-        {
-            var p = new Person
-            {
-                Id = id,
-                Surname = _person.Surname
-            };
+    public class TenureType
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
 
-            p.Gender = genders.GetRandom();
-            p.DateOfBirth = DateTime.Now.AddYears(-18).AddDays(Faker.RandomNumber.Next(1,9570));
-            p.FirstName = Faker.Name.First();
-            if (Faker.RandomNumber.Next(1, 100) > 80)
-            {
-                p.MiddleName = Faker.Name.First();
-            }
-            p.Surname = _person.Surname;
-            p.Title = Faker.Name.Prefix();
-            return p;
-        }
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class PremisesType
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class PremisesGroupType
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class RevenueAccountType
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class PropertySource
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class PropertyStatus
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+
+    public class PropertyType
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    public class PropertySubType
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class OwnershipType
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class Frequency
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class ContactMethod
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
     }
 
     public static class ListExtensions
@@ -422,4 +895,5 @@ namespace HousingContext
             return obj[random];
         } 
     }
+    
 }

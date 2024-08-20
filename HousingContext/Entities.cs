@@ -50,8 +50,7 @@ namespace HousingContext
         [MaxLength(30)]
         public string SourceKey { get; set; }
         
-        [Required]
-        public virtual AddressType AddressTypeId { get; set; }
+       
     }
     
     public class Premises
@@ -128,6 +127,9 @@ namespace HousingContext
         
         [Required]
         public Premises PremisesId { get; set; }
+        
+        [Required]
+        public virtual AddressType AddressTypeId { get; set; }
         
         [Required]
         public bool IsCurrent { get; set; }

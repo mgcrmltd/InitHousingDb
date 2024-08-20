@@ -33,6 +33,7 @@ namespace HousingContext
         public DbSet<PropertySource> PropertySources { get; set; }
         public DbSet<PropertyStatus> PropertyStatuses { get; set; }
         public DbSet<PropertyType> PropertyTypes { get; set; }
+        public DbSet<PropertySubType> PropertySubTypes { get; set; }
         public DbSet<OwnershipType> OwnershipTypes { get; set; }
         public DbSet<Frequency> Frequencies { get; set; }
         public DbSet<ContactMethod> ContactMethods { get; set; }
@@ -40,8 +41,10 @@ namespace HousingContext
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            // optionsBuilder.UseSqlServer(
+            //     @"Server=tcp:mgxrmpeabody.database.windows.net,1433;Initial Catalog=peabodyremote;Persist Security Info=False;User ID=peabodyadmin;Password=HFJv9pt$7j#h;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=3000");
             optionsBuilder.UseSqlServer(
-                @"Server=tcp:mgxrmpeabody.database.windows.net,1433;Initial Catalog=peabodyremote;Persist Security Info=False;User ID=peabodyadmin;Password=HFJv9pt$7j#h;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=3000");
+                @"Server=tcp:host.docker.internal,1433;Initial Catalog=peabodyremote;Persist Security Info=False;User ID=sa;Password=*!#pass@word1OneHello;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=3000");
             optionsBuilder.EnableSensitiveDataLogging();
             base.OnConfiguring(optionsBuilder);
         }

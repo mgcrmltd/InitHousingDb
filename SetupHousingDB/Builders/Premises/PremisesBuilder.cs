@@ -2,34 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using HousingContext;
+using SetupHousingDB.Builders.Address;
 
 namespace SetupHousingDB.Builders.Property
 {
     public interface IPremisesBuilder
     {
         void Init(List<HousingContext.Premises> premisesList);
+        void SetPremisesType(List<PremisesType> premisesTypes);
         void SetPropertyType(List<PropertyType> propertyTypes);
         void SetPropertySubType(List<PropertySubType> propertySubTypes);
         void SetLeaseType(List<LeaseType> leaseTypes);
-        
+
         void SetPropertySource(List<PropertySource> propertySources);
         void SetPropertyStatus(List<PropertyStatus> propertyStatuses);
         void SetParent(HousingContext.Premises parentPremises);
         void SetName();
-        void SetPostalAddress(List<HousingContext.Address> addresses, List<AddressType> addressTypes);
 
-        HousingContext.Premises BuiltPremises { get; }
+        void AddSourceApplication();
+        void AddSourceKey();
+
+        HousingContext.Premises BuiltPremises { get; set; }
         int IdSeed { get; }
     }
 
-    public abstract class PremisesBuilder : IPremisesBuilder
+    public abstract class PremisesBuilder : IPremisesBuilder, ICdmBuilder
     {
-        //protected List<PropertyType> PropertyTypeList;
-        //protected List<PropertySubType> PropertySubTypeList;
-        //protected List<HousingContext.Address> AddressList;
-        //protected List<AssociatedAddress> AssociatedAddressList;
         public HousingContext.Premises BuiltPremises { get; set; }
-        public abstract void SetPostalAddress(List<Address> addresses, List<AddressType> addressTypes);
         public int IdSeed => 100000;
         protected Random Random;
 
@@ -38,14 +37,6 @@ namespace SetupHousingDB.Builders.Property
             Random = new Random();
         }
 
-        // public void Init(List<HousingContext.Premises> properties)
-        // {
-        //     BuiltPremises = new HousingContext.Premises()
-        //     {
-        //         Id = properties.Count < 1 ? IdSeed : (from p in properties select p.Id).Max() + 1
-        //     };
-        // }
-
         public void Init(List<Premises> premisesList)
         {
             BuiltPremises = new Premises()
@@ -53,13 +44,10 @@ namespace SetupHousingDB.Builders.Property
                 Id = premisesList.Count < 1 ? IdSeed : (from p in premisesList select p.Id).Max() + 1
             };
         }
+
+        public abstract void SetPremisesType(List<PremisesType> premisesTypes);
+
         public abstract void SetPropertyType(List<PropertyType> propertyTypes);
-     
-        public bool GenerateAOneInXChance(int x)
-        {
-            var i = Random.Next(1, x);
-            return i % x == 0;
-        }
 
         public abstract void SetPropertySubType(List<PropertySubType> propertySubTypes);
         public abstract void SetLeaseType(List<LeaseType> leaseTypes);
@@ -80,15 +68,30 @@ namespace SetupHousingDB.Builders.Property
 
         public void SetName()
         {
-            BuiltPremises.Name = $@"{BuiltPremises.PropertyTypeId.Name}-{BuiltPremises.Id.ToString()}";
+            BuiltPremises.Name = $@"{BuiltPremises.PremisesTypeId.Name}-{BuiltPremises.Id.ToString()}";
+        }
+
+        public void AddSourceApplication()
+        {
+            BuiltPremises.SourceApplication = "Northgate";
+        }
+
+        public void AddSourceKey()
+        {
+            BuiltPremises.SourceKey = BuiltPremises.Id.ToString();
         }
     }
 
     public class EstatePremisesBuilder : PremisesBuilder
     {
+        public override void SetPremisesType(List<PremisesType> premisesTypes)
+        {
+            BuiltPremises.PremisesTypeId = premisesTypes.First(x => x.Name == "EST");
+        }
+
         public override void SetPropertyType(List<PropertyType> propertyTypes)
         {
-            BuiltPremises.PropertyTypeId = propertyTypes.First(x => x.Name == "EST");
+            BuiltPremises.PropertyTypeId = null;
         }
 
         public override void SetPropertySubType(List<PropertySubType> propertySubTypes)
@@ -100,23 +103,23 @@ namespace SetupHousingDB.Builders.Property
         {
             BuiltPremises.LeaseTypeId = null;
         }
-
-        public override void SetPostalAddress(List<Address> addresses, List<AddressType> addressTypes)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public class BlockPremisesBuilder : EstatePremisesBuilder
     {
-        public override void SetPropertyType(List<PropertyType> propertyTypes)
+        public override void SetPremisesType(List<PremisesType> premisesTypes)
         {
-            BuiltPremises.PropertyTypeId = propertyTypes.First(x => x.Name == "BLK");
+            BuiltPremises.PremisesTypeId = premisesTypes.First(x => x.Name == "BLK");
         }
     }
 
     public class FlatPremisesBuilder : PremisesBuilder
     {
+        public override void SetPremisesType(List<PremisesType> premisesTypes)
+        {
+            BuiltPremises.PremisesTypeId = premisesTypes.First(x => x.Name == "PRO");
+        }
+        
         public override void SetPropertyType(List<PropertyType> propertyTypes)
         {
             BuiltPremises.PropertyTypeId = propertyTypes.First(x => x.Name == "FLT");
@@ -131,20 +134,16 @@ namespace SetupHousingDB.Builders.Property
 
         public override void SetLeaseType(List<LeaseType> leaseTypes)
         {
-            BuiltPremises.LeaseTypeId = leaseTypes.First(x => x.Name == "FLT");
-        }
-
-        public override void SetPostalAddress(List<Address> addresses, List<AddressType> addressTypes)
-        {
-            throw new NotImplementedException();
+            BuiltPremises.LeaseTypeId = leaseTypes.First(x => x.Name == "SOWFLT");
         }
     }
 
-    public interface IPropertyDirector
+    public interface IPremisesDirector
     {
         HousingContext.Premises Build(
             IPremisesBuilder builder,
             List<HousingContext.Premises> properties,
+            List<PremisesType> premisesTypes,
             List<PropertyType> propertyTypes,
             List<PropertySubType> propertySubTypes,
             List<LeaseType> leaseTypes,
@@ -153,11 +152,12 @@ namespace SetupHousingDB.Builders.Property
             HousingContext.Premises parent);
     }
     
-    public class PropertyDirector : IPropertyDirector
+    public class PremisesDirector : IPremisesDirector
     {
         public HousingContext.Premises Build(
             IPremisesBuilder builder, 
             List<HousingContext.Premises> properties,
+            List<PremisesType> premisesTypes,
             List<PropertyType> propertyTypes,
             List<PropertySubType> propertySubTypes,
             List<LeaseType> leaseTypes,
@@ -166,11 +166,14 @@ namespace SetupHousingDB.Builders.Property
             HousingContext.Premises parent)
         {
             builder.Init(properties);
+            builder.SetPremisesType(premisesTypes);
+            builder.SetName();
             builder.SetParent(parent);
             builder.SetPropertyType(propertyTypes);
             builder.SetPropertySubType(propertySubTypes);
             builder.SetLeaseType(leaseTypes);
-            builder.SetPostalAddress(addresses, addressTypes);
+            builder.AddSourceApplication();
+            builder.AddSourceKey();
             
             return builder.BuiltPremises;
         }

@@ -17,7 +17,6 @@ namespace SetupHousingDB
     {
         static void Main(string[] args)
         {
-
             Console.WriteLine("Start DB Setup");
             var housingContext = new HousingDbContext();
             var t = housingContext.Database.CanConnect();
@@ -25,19 +24,43 @@ namespace SetupHousingDB
             housingContext.Database.EnsureDeleted();
             housingContext.Database.EnsureCreated();
             housingContext.SaveChangesAsync();
-            var dataGenerator = new HousingContextDataService();
-            dataGenerator.GenerateReferenceData();
             
-            var estateFactory = new EstateFactory(dataGenerator);
-            estateFactory.BuildEstate();
-            dataGenerator.PopulateContextsNoReferenceData(housingContext);
+            GenerateFullData(housingContext);
             housingContext.SaveChanges();
+            
+            // var dataGenerator = new HousingContextDataService();
+            // dataGenerator.GenerateReferenceData();
+            // dataGenerator.PopulateAllContexts(housingContext);
+            // housingContext.SaveChanges();
+            
+            // var estateFactory = new EstateFactory(dataGenerator);
+            // estateFactory.BuildEstate();
+            // dataGenerator.PopulateAllContexts(housingContext);
+            // dataGenerator.PopulateContextsNoReferenceData(housingContext);
+            // dataGenerator.ClearReferenceDataContexts(housingContext);
+            
+            // housingContext.SaveChanges();
             // GenerateReferenceData(dataGenerator, housingContext);
             // GenerateEstateData(dataGenerator, housingContext);
             // housingContext.SaveChangesAsync();
             // housingContext.SaveChanges();
             // Console.WriteLine("Done");
             // Console.ReadKey();
+        }
+
+        private static void GenerateFullData(HousingDbContext housingContext)
+        {
+            var dataGenerator = new HousingContextDataService();
+            dataGenerator.GenerateReferenceData();
+            var estateFactory = new EstateFactory(dataGenerator);
+            var tenancyFactory = new TenancyFactory(dataGenerator);
+            estateFactory.BuildEstate();
+            var propertyPremisesType = dataGenerator.PremisesTypeList.First(x => x.SourceKey == "PRO");
+            foreach (var flat in dataGenerator.PremisesList.Where(x => x.PremisesTypeId.Id == propertyPremisesType.Id))
+            {
+                tenancyFactory.BuildTenancy(flat);
+            }
+            dataGenerator.PopulateAllContexts(housingContext);
         }
         
         private static void GenerateEstateData(HousingContextDataService dataGenerator,  HousingDbContext housingContext)
@@ -166,6 +189,26 @@ namespace SetupHousingDB
                 context.Users.AddRange(UserList);
                 context.PremisesElements.AddRange(PremisesElementList);
                 context.People.AddRange(PersonList);
+            }
+
+            public void ClearReferenceDataContexts(HousingDbContext context)
+            {
+                context.AddressTypes = null;
+                context.ContactMethods = null;
+                context.Elements = null;
+                context.LeaseTypes = null;
+                context.TenancyTypes = null;
+                context.TenancySources = null;
+                context.TenureTypes = null;
+                context.PremisesTypes = null;
+                context.PremisesGroupTypes = null;
+                context.RevenueAccountTypes = null;
+                context.PropertySources = null;
+                context.PropertyStatuses = null;
+                context.PropertyTypes = null;
+                context.PropertySubTypes = null;
+                context.OwnershipTypes = null;
+                context.Frequencies = null;
             }
 
             public void GenerateReferenceData()

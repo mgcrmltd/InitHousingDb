@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace HousingContext
 {
-
     public class Address
     {
         [Key]
@@ -87,7 +86,6 @@ namespace HousingContext
         [Required]
         public virtual PremisesType PremisesTypeId { get; set; }
 
-        [Required]
         public virtual PropertyType PropertyTypeId { get; set; }
         
         public virtual PropertySubType PropertySubTypeId { get; set; }
@@ -211,6 +209,7 @@ namespace HousingContext
         [MaxLength(30)]
         public string SourceKey { get; set; }
 
+        [Required]
         public virtual TenancyType TenancyTypeId { get; set; }
 
         public virtual TenureType TenureTypeId { get; set; }
@@ -558,6 +557,24 @@ namespace HousingContext
         [Required]
         [MaxLength(64)]
         public string CrmId { get; set; } 
+        
+        [MaxLength(300)]
+        public string FirstName { get; set; }
+        
+        [MaxLength(300)]
+        public string LastName { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        // [Required]
+        // public Party PartyId { get; set; }
+        
+        
     }
 
     public class AddressType
@@ -887,6 +904,99 @@ namespace HousingContext
         [Required]
         [MaxLength(30)]
         public string SourceKey { get; set; }
+    }
+    
+    public class PartyType
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(300)]
+        public string Description { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+    }
+    
+    public class Party
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        [Required]
+        public PartyType PartyTypeId { get; set; }
+    }
+    
+    public class PartyAddress
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        [Required]
+        public Party PartyId { get; set; }
+        
+        [Required]
+        public Address AddressId { get; set; }
+
+    }
+    
+    public class PartyContactMethod
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key] 
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string Name { get; set; }
+        
+        [MaxLength(30)]
+        public string SourceApplication { get; set; }
+
+        [Required]
+        [MaxLength(30)]
+        public string SourceKey { get; set; }
+        
+        [Required]
+        public Party PartyId { get; set; }
+        
+        [Required]
+        public ContactMethod ContactMethodId { get; set; }
+
     }
 
     public static class ListExtensions

@@ -1,4 +1,89 @@
-﻿// using System;
+﻿
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using HousingContext;
+using SetupHousingDB.Builders.Address;
+
+public interface ITenancyBuilder : ICdmBuilder
+{
+    void Init(List<HousingContext.Tenancy> tenancies);
+    void SetEndDate();
+    void SetStartDate();
+    void SetTenancyType(List<TenancyType> tenancyTypes);
+    void SetTenureType(List<TenureType> tenureTypes);
+    void SetName();
+    void AddSourceApplication();
+    void AddSourceKey();
+    HousingContext.Tenancy Tenancy { get; }
+    int IdSeed { get; }
+}
+
+public class TenancyBuilder : ITenancyBuilder
+{
+    public int IdSeed => 100000;
+    public void Init(List<HousingContext.Tenancy> tenancies)
+    {
+        BuiltTenancy = new HousingContext.Tenancy()
+        {
+            Id = tenancies.Count < 1 ? IdSeed : (from p in tenancies select p.Id).Max() + 1
+        };
+    }
+    public void SetEndDate()
+    {
+    }
+    public void SetStartDate()
+    {
+        BuiltTenancy.StartDate = DateTime.Now.Subtract(TimeSpan.FromDays(Faker.RandomNumber.Next(10, 8000)));
+    }
+    public void SetTenancyType(List<TenancyType> tenancyTypes)
+    {
+        BuiltTenancy.TenancyTypeId = tenancyTypes.GetRandom();
+    }
+    public void SetTenureType(List<TenureType> tenureTypes)
+    {
+        BuiltTenancy.TenureTypeId = tenureTypes.GetRandom();
+    }
+    public void SetName()
+    {
+        BuiltTenancy.Name = $"TEN{BuiltTenancy.Id.ToString()}";
+    }
+
+    protected HousingContext.Tenancy BuiltTenancy;
+    public HousingContext.Tenancy Tenancy => BuiltTenancy;
+    public void AddSourceApplication()
+    {
+        BuiltTenancy.SourceApplication = "Northgate";
+    }
+
+    public void AddSourceKey()
+    {
+        BuiltTenancy.SourceKey = BuiltTenancy.Id.ToString();
+    }
+}
+
+public interface ITenancyDirector
+{
+    HousingContext.Tenancy Build(ITenancyBuilder builder, List<HousingContext.Tenancy> tenancies,
+        List<TenancyType> tenancyTypes, List<TenureType> tenureTypes);
+}
+
+public class TenancyDirector : ITenancyDirector
+{
+    public HousingContext.Tenancy Build(ITenancyBuilder builder, List<HousingContext.Tenancy> tenancies, List<TenancyType> tenancyTypes, List<TenureType> tenureTypes)
+    {
+        builder.Init(tenancies);
+        builder.SetStartDate();
+        builder.SetEndDate();
+        builder.SetTenancyType(tenancyTypes);
+        builder.SetTenureType(tenureTypes);
+        builder.SetName();
+        builder.AddSourceApplication();
+        builder.AddSourceKey();
+        return builder.Tenancy;
+    }
+}
+// using System;
 // using System.Collections.Generic;
 // using System.Linq;
 // using HousingContext;

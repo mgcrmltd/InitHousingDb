@@ -12,6 +12,7 @@ namespace SetupHousingDB.Factories
         private readonly TenancyDirector _tenancyDirector = new TenancyDirector();
         private readonly TenancyPremisesDirector _tenancyPremisesDirector = new TenancyPremisesDirector();
         private readonly TenancyOccupantDirector _tenancyOccupantDirector = new TenancyOccupantDirector();
+        private readonly RevenueAccountDirector _revenueAccountDirector = new RevenueAccountDirector();
         private readonly PersonDirector _personDirector = new PersonDirector();
 
         public TenancyFactory(Program.HousingContextDataService housingContextDataService)
@@ -36,6 +37,7 @@ namespace SetupHousingDB.Factories
             var tenancyOccupant = _tenancyOccupantDirector.Build(tenancyOccupantBuilder,
                 _housingContextDataService.TenancyOccupantList, mainTenant, tenancy);
             _housingContextDataService.TenancyOccupantList.Add(tenancyOccupant);
+            BuildRevenueAccount(tenancyPremises);
 
             if (RandomHelper.GenerateAOneInXChance(2))
             {
@@ -45,6 +47,14 @@ namespace SetupHousingDB.Factories
                     _housingContextDataService.TenancyOccupantList, tenant2, tenancy);
                 _housingContextDataService.TenancyOccupantList.Add(tenancyOccupant2);
             }
+        }
+        
+        public void BuildRevenueAccount(TenancyPremises tenancyPremises)
+        {
+            var revenueAccountBuilder = new WeeklyRevenueAccountBuilder();
+            var revenueAccount = _revenueAccountDirector.Build(revenueAccountBuilder, _housingContextDataService.RevenueAccountList, tenancyPremises, 
+                _housingContextDataService.RevenueAccountTypeList, _housingContextDataService.FrequencyList, _housingContextDataService.TenancyList);
+            _housingContextDataService.RevenueAccountList.Add(revenueAccount);
         }
     }
 }

@@ -751,6 +751,9 @@ namespace HousingContext
         [Required]
         [MaxLength(30)]
         public string SourceKey { get; set; }
+        
+
+        
     }
     
     public class PropertySource

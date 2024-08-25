@@ -25,7 +25,7 @@ namespace SetupHousingDB.Builders.Tenancy
 
         public void AddName()
         {
-            throw new System.NotImplementedException();
+            TenancyOccupant.Name = $"TO{TenancyOccupant.PersonId.Id}:{TenancyOccupant.TenancyId.Id}";
         }
 
         public int IdSeed => 10000;
@@ -73,6 +73,7 @@ namespace SetupHousingDB.Builders.Tenancy
             builder.Init(tenancyOccupants);
             builder.AddPerson(person);
             builder.AddTenancy(tenancy);
+            builder.AddName();
             builder.AddSourceApplication();
             builder.AddSourceKey();
             return builder.TenancyOccupant;
